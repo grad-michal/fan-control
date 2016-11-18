@@ -27,8 +27,13 @@ parser.add_argument('--integral-minimum', dest='integral_minimum',
 	help='Integral component minimum internal value', type=float)
 parser.add_argument('--integral-maximum', dest='integral_maximum', 
 	help='Integral component maximum internal value', type=float)
-parser.add_argument('-v', '--verbose', dest='verbose',
+
+verbosity_group = parser.add_mutually_exclusive_group()
+verbosity_group.add_argument('-v', '--verbose', dest='verbose',
 	help='Print control state', action='store_true')
+verbosity_group.add_argument('-q', '--quiet', dest='quiet',
+	help='Print only warnings', action='store_true')
+
 parser.add_argument('--syslog', dest='syslog',
 	help='Use syslog for logging', action='store_true')
 args = parser.parse_args()
@@ -38,7 +43,9 @@ FAN_MODE_FILE = "/sys/devices/odroid_fan.14/fan_mode"
 FAN_SPEED_FILE = "/sys/devices/odroid_fan.14/pwm_duty"
 
 root_logger = logging.getLogger()
-if args.verbose:
+if args.quiet:
+	root_logger.setLevel(logging.WARNING)
+elif args.verbose:
 	root_logger.setLevel(logging.DEBUG)
 else:
 	root_logger.setLevel(logging.INFO)
