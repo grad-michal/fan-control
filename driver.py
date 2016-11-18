@@ -34,6 +34,6 @@ class Fan(Driver):
 		if target == self._last_write:
 			return
 		written = str(target).encode()
-		Fan.LOGGER.debug("Fan set to %i", target)
+		Fan.LOGGER.info("Fan set to %i (%.0f%%)", target, control*100.0)
 		os.write(self._speed_file, written)
 		self._last_write = target

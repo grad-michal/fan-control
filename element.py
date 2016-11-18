@@ -32,6 +32,6 @@ class Thermometer(Element):
 			sensors.append(int(sensor_value))
 		average_sensor = sum(sensors) / len(sensors)
 		current = average_sensor / 1000.0
-		Thermometer.LOGGER.debug("Current temperature is %f°C", current)
+		Thermometer.LOGGER.info("Current temperature is %.1f°C", current)
 		input = (current - self._zero_point) / self._scale
 		return input

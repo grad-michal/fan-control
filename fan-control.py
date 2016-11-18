@@ -2,6 +2,7 @@
 import time
 import argparse
 import logging
+import logging.handlers
 
 from controller import PID
 from element import Thermometer
@@ -25,13 +26,26 @@ parser.add_argument('--integral-minimum', dest='integral_minimum',
 	help='Integral component minimum internal value', type=float)
 parser.add_argument('--integral-maximum', dest='integral_maximum', 
 	help='Integral component maximum internal value', type=float)
+parser.add_argument('-v', '--verbose', dest='verbose',
+	help='Print control state', action='store_true')
+parser.add_argument('--syslog', dest='syslog',
+	help='Use syslog for logging', action='store_true')
 args = parser.parse_args()
 
 TEMPERATURE_FILE = "/sys/devices/10060000.tmu/temp"
 FAN_MODE_FILE = "/sys/devices/odroid_fan.14/fan_mode"
 FAN_SPEED_FILE = "/sys/devices/odroid_fan.14/pwm_duty"
 
-logging.basicConfig(level=logging.DEBUG, format='%(relativeCreated)6d %(threadName)s %(message)s')
+root_logger = logging.getLogger()
+if args.verbose:
+	root_logger.setLevel(logging.DEBUG)
+else:
+	root_logger.setLevel(logging.INFO)
+
+if args.syslog:
+	root_logger.addHandler(logging.handlers.SysLogHandler())
+else:
+	root_logger.addHandler(logging.StreamHandler())
 
 with PID(proportional = args.proportional, integrative = args.integrative, derivative = args.derivative,
 			integral_minimum = args.integral_minimum, integral_maximum = args.integral_maximum) as controller:
@@ -44,3 +58,6 @@ with PID(proportional = args.proportional, integrative = args.integrative, deriv
 						time.sleep(args.update_delay)
 					except KeyboardInterrupt:
 						break
+
+logging.shutdown()
+
