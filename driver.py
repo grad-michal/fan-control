@@ -1,10 +1,14 @@
 import os
 
+import logging
+
 class Driver(object):
 	def update(self, control):
 		raise NotImplementedError
 
 class Fan(Driver):
+	LOGGER = logging.getLogger('Fan')
+
 	def __init__(self, mode_path, speed_path):
 		self._mode_path = mode_path
 		self._speed_path = speed_path
@@ -22,11 +26,10 @@ class Fan(Driver):
 
 	def update(self, control):
 		target = int(control * 255)
-		if target > 3 and target < 255:
-			written = str(target).encode()
-		elif target >= 255:
-			written = b'254'
-		else:
-			written = b'2'
-		print("Fan set to: ", written)
+		if target >= 255:
+			target = 254
+		elif target <= 3:
+			target = 2
+		written = str(target).encode()
+		Fan.LOGGER.debug("Fan set to %i", target)
 		os.write(self._speed_file, written)

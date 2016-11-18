@@ -1,8 +1,12 @@
+import logging
+
 class Controller(object):
 	def update(self, error):
 		raise NotImplementedError
 
 class PID(Controller):
+	LOGGER = logging.getLogger('PID')
+
 	def __init__(self, proportional, integrative, derivative, integral_minimum = None, integral_maximum = None):
 		self._proportional = proportional
 		self._integrative = integrative
@@ -26,19 +30,19 @@ class PID(Controller):
 		pass
 
 	def update(self, error):
-		print("Error: ", error)
+		PID.LOGGER.debug("Error: %f", error)
 		self._integral += error
 		if self._integral > self._integral_maximum:
 			self._integral = self._integral_maximum
 		if self._integral < self._integral_minimum:
 			self._integral = self._integral_minimum
-		print("Integral: ", self._integral)
+		PID.LOGGER.debug("Integral: %f", self._integral)
 	
 		proportional_part = self._proportional * error
 		integrative_part = self._integrative * self._integral
 		derivative_part = self._derivative * (error - self._last_error)
 		
-		print("PID: ", proportional_part, integrative_part, derivative_part)
-		print("Control: ", proportional_part + integrative_part + derivative_part)
-		return proportional_part + integrative_part + derivative_part
+		control = proportional_part + integrative_part + derivative_part
+		PID.LOGGER.debug("Control: %.03f + %.03f + %.03f = %.03f", proportional_part, integrative_part, derivative_part, control)
+		return control
 

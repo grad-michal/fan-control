@@ -1,11 +1,15 @@
 import os
 import sys
 
+import logging
+
 class Element(object):
 	def measure(self):
 		raise NotImplementedError
 
 class Thermometer(Element):
+	LOGGER = logging.getLogger('Thermometer')
+
 	def __init__(self, source_path, minimal, maximal):
 		self._source_path = source_path
 		self._zero_point = minimal
@@ -28,6 +32,6 @@ class Thermometer(Element):
 			sensors.append(int(sensor_value))
 		average_sensor = sum(sensors) / len(sensors)
 		current = average_sensor / 1000.0
-		print("Current Temperature: ", current)
+		Thermometer.LOGGER.debug("Current temperature is %f°C", current)
 		input = (current - self._zero_point) / self._scale
 		return input

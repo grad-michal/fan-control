@@ -1,6 +1,7 @@
 #/usr/bin/python3
 import time
 import argparse
+import logging
 
 from controller import PID
 from element import Thermometer
@@ -29,6 +30,8 @@ args = parser.parse_args()
 TEMPERATURE_FILE = "/sys/devices/10060000.tmu/temp"
 FAN_MODE_FILE = "/sys/devices/odroid_fan.14/fan_mode"
 FAN_SPEED_FILE = "/sys/devices/odroid_fan.14/pwm_duty"
+
+logging.basicConfig(level=logging.DEBUG, format='%(relativeCreated)6d %(threadName)s %(message)s')
 
 with PID(proportional = args.proportional, integrative = args.integrative, derivative = args.derivative,
 			integral_minimum = args.integral_minimum, integral_maximum = args.integral_maximum) as controller:
