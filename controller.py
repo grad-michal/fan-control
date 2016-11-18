@@ -3,11 +3,15 @@ class Controller(object):
 		raise NotImplementedError
 
 class PID(Controller):
-	def __init__(self, proportional, integrative, derivative, integral_mininum = 0.0, integral_maximum = None):
+	def __init__(self, proportional, integrative, derivative, integral_minimum = None, integral_maximum = None):
 		self._proportional = proportional
 		self._integrative = integrative
 		self._derivative = derivative
-		self._integral_minimum = integral_mininum
+		
+		if integral_maximum is None:
+			self._integral_minimum = 0.0
+		else:
+			self._integral_minimum = integral_minimum
 		if integral_maximum is None:
 			self._integral_maximum = 1.0 / integrative
 		else:

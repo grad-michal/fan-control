@@ -6,7 +6,7 @@ class Element(object):
 		raise NotImplementedError
 
 class Thermometer(Element):
-	def __init__(self, source_path, minimal = 52.0, maximal = 75.0):
+	def __init__(self, source_path, minimal, maximal):
 		self._source_path = source_path
 		self._zero_point = minimal
 		self._scale = maximal - minimal
