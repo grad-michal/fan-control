@@ -51,9 +51,12 @@ else:
 	root_logger.setLevel(logging.INFO)
 
 if args.syslog:
-	root_logger.addHandler(logging.handlers.SysLogHandler())
+	handler = logging.handlers.SysLogHandler()
 else:
-	root_logger.addHandler(logging.StreamHandler())
+	handler = logging.StreamHandler()
+formatter = logging.Formatter('%(name)-12s %(levelname)5s: %(message)s')
+handler.setFormatter(formatter)
+root_logger.addHandler(handler)
 
 with PID(proportional = args.proportional, integrative = args.integrative, derivative = args.derivative,
 			integral_minimum = args.integral_minimum, integral_maximum = args.integral_maximum) as controller:
