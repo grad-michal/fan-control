@@ -14,7 +14,8 @@ class Thermometer(Element):
 		self._source_path = source_path
 		self._zero_point = minimal
 		self._scale = maximal - minimal
-	
+		self._warn_level = (maximal + minimal) / 2.0
+
 	def __enter__(self):
 		self._source_file = os.open(self._source_path, os.O_RDONLY)
 		return self
@@ -32,6 +33,10 @@ class Thermometer(Element):
 			sensors.append(int(sensor_value))
 		average_sensor = sum(sensors) / len(sensors)
 		current = average_sensor / 1000.0
-		Thermometer.LOGGER.info("Current temperature is %.1f°C", current)
+		if current >= self._warn_level:
+			level = logging.WARNING
+		else:
+			level = logging.INFO
+		Thermometer.LOGGER.log(level, "Current temperature is %.1f°C", current)
 		input = (current - self._zero_point) / self._scale
 		return input
