@@ -7,8 +7,6 @@ import logging.handlers
 import signal
 
 from controller import PID
-from element import ThermometerXU4, ThermometerC2
-from driver import DriverXU4, DriverC2
 from system import ClosedLoop
 
 parser = argparse.ArgumentParser()
@@ -50,11 +48,11 @@ else:
 	root_logger.setLevel(logging.INFO)
 
 if args.device == 'XU4':
-	termometer = ThermometerXU4
-	driver = DriverXU4
+	from element import ThermometerXU4 as TargetThermometer
+	from driver import DriverXU4 as TargetDriver
 elif args.device == 'C2':
-	termometer = ThermometerC2
-	driver = DriverC2
+	from element import ThermometerC2 as TargetThermometer
+	from driver import DriverC2 as TargetDriver
 else:
 	raise NotImplementedError
 
@@ -78,9 +76,9 @@ signal.signal(signal.SIGTERM, sigterm_handler)
 
 with PID(proportional = args.proportional, integrative = args.integrative, derivative = args.derivative,
 			integral_minimum = args.integral_minimum, integral_maximum = args.integral_maximum) as controller:
-	with ThermometerC2(minimal = args.minimal_temperature, maximal = args.maximal_temperature) as element:		
-		with DriverC2() as driver:		
-			with ClosedLoop(controller = controller, element = element, driver = driver) as system:				
+	with TargetThermometer(minimal = args.minimal_temperature, maximal = args.maximal_temperature) as element:
+		with TargetDriver() as driver:
+			with ClosedLoop(controller = controller, element = element, driver = driver) as system:
 				while working:
 					try:
 						system.step()
