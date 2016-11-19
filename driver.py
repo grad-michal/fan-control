@@ -49,8 +49,8 @@ class DriverXU4(Driver):
 		super(DriverXU4, self).__init__()
 	
 	def __enter__(self):
-		self._mode_file = os.open(FAN_MODE_FILE, os.O_WRONLY)
-		self._speed_file = os.open(FAN_SPEED_FILE, os.O_WRONLY)
+		self._mode_file = os.open(DriverXU4.FAN_MODE_FILE, os.O_WRONLY)
+		self._speed_file = os.open(DriverXU4.FAN_SPEED_FILE, os.O_WRONLY)
 		os.write(self._mode_file, b"0")
 		return self
 		
