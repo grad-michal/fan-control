@@ -60,7 +60,9 @@ class DriverXU4(Driver):
 		os.close(self._mode_file)
 
 	def _calculate_target(self, control):
-		return int(control * 251) + 3
+		if control == 0:
+			return 0
+		return int(control * 239) + 16
 		
 	def _write_speed(self, target):
 		written = str(target).encode()
