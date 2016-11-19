@@ -1,0 +1,13 @@
+[Unit]
+Description=Fan control
+After=syslog.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/fan-control
+ExecStart=/opt/fan-control/fan-control.py --update-delay 3 --quiet
+StandardOutput=syslog
+StandardError=syslog
+
+[Install]
+WantedBy=multi-user.target
