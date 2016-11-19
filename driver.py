@@ -82,13 +82,14 @@ class DriverC2(Driver):
 		self._speed_file = os.open(DriverC2.PWM_DUTY_FILE, os.O_WRONLY)
 		self._freq_file = os.open(DriverC2.PWM_FREQ_FILE, os.O_WRONLY)
 		os.write(self._state_file, b"1")
-		os.write(self._freq_file, b"100000")
-		os.write(self._freq_file, b"0")
+		os.write(self._freq_file, b"100000")		
+		os.write(self._speed_file, b"0")
 		return self
 		
 	def __exit__(self, exc_type, exc_value, traceback):
 		os.write(self._state_file, b"0")
-		os.write(self._freq_file, b"0")
+		os.write(self._freq_file, b"0")		
+		os.write(self._speed_file, b"0")
 		os.close(self._speed_file)
 		os.close(self._state_file)
 		os.close(self._freq_file)

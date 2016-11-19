@@ -4,6 +4,7 @@ import time
 import argparse
 import logging
 import logging.handlers
+import signal
 
 from controller import PID
 from element import ThermometerC2
@@ -65,12 +66,22 @@ formatter = logging.Formatter('%(name)-12s %(levelname)5s: %(message)s')
 handler.setFormatter(formatter)
 root_logger.addHandler(handler)
 
+
+working = True
+
+def sigterm_handler(signum, frame):
+	global working
+	working	= False
+	root_logger.info("Exiting due to SIGTERM")	
+    
+signal.signal(signal.SIGTERM, sigterm_handler)
+
 with PID(proportional = args.proportional, integrative = args.integrative, derivative = args.derivative,
 			integral_minimum = args.integral_minimum, integral_maximum = args.integral_maximum) as controller:
 	with ThermometerC2(minimal = args.minimal_temperature, maximal = args.maximal_temperature) as element:		
 		with DriverC2() as driver:		
-			with ClosedLoop(controller = controller, element = element, driver = driver) as system:
-				while True:
+			with ClosedLoop(controller = controller, element = element, driver = driver) as system:				
+				while working:
 					try:
 						system.step()
 						time.sleep(args.update_delay)
