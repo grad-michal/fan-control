@@ -7,8 +7,8 @@ import logging.handlers
 import signal
 
 from controller import PID
-from element import ThermometerC2
-from driver import DriverC2
+from element import ThermometerXU4, ThermometerC2
+from driver import DriverXU4, DriverC2
 from system import ClosedLoop
 
 parser = argparse.ArgumentParser()
