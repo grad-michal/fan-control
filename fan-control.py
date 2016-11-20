@@ -30,6 +30,10 @@ parser.add_argument('--integral-minimum', dest='integral_minimum',
 	help='Integral component minimum internal value', type=float)
 parser.add_argument('--integral-maximum', dest='integral_maximum', 
 	help='Integral component maximum internal value', type=float)
+parser.add_argument('-m', '--minimal-control', dest='minimal_control', 
+	help='Minimal control value. If set above 0 fan will never shutdown (unless force-shutdown-error set and reached)', type=float, default = 0.0)
+parser.add_argument('-ft', '--force-shutdown-error', dest='force_shutdown_error', 
+	help='Temperature error that when reached causes fan to shutdown until error is grater than 0.0 again.', type=float)
 
 verbosity_group = parser.add_mutually_exclusive_group()
 verbosity_group.add_argument('-v', '--verbose', dest='verbose',
@@ -77,7 +81,7 @@ def sigterm_handler(signum, frame):
 signal.signal(signal.SIGTERM, sigterm_handler)
 
 with PID(proportional = args.proportional, integrative = args.integrative, derivative = args.derivative,
-			integral_minimum = args.integral_minimum, integral_maximum = args.integral_maximum) as controller:
+			integral_minimum = args.integral_minimum, integral_maximum = args.integral_maximum, minimal_control = args.minimal_control, force_shutdown_error = args.force_shutdown_error) as controller:
 	with ThermometerC2(minimal = args.minimal_temperature, maximal = args.maximal_temperature) as element:		
 		with DriverC2() as driver:		
 			with ClosedLoop(controller = controller, element = element, driver = driver) as system:				
